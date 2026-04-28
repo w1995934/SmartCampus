@@ -2,6 +2,7 @@ package com.mycompany.smartcampus.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public class SensorReading {
 
     private String readingID;
@@ -12,13 +13,13 @@ public class SensorReading {
 
     public SensorReading() {}
 
-    public SensorReading( String sensorID,String readingID,double value,String unit) {
-        this.sensorID = sensorID;
-        this.readingID = readingID;
-        this.value = value;
-        this.unit = unit;
-        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-    }
+public SensorReading(String readingID, String sensorID, double value, String unit) {
+    this.readingID = readingID;
+    this.sensorID = sensorID;
+    this.value = value;
+    this.unit = unit;
+    this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+}
 
     public String getReadingID() { return readingID; }
     public void setReadingID(String readingID) { this.readingID = readingID; }

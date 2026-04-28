@@ -8,12 +8,12 @@ public class Room {
 
     public Room() {}
 
-    public Room(String roomID,String building, String name,int floor) {
-        this.roomID = roomID;
-        this.name = name;
-        this.building = building;
-        this.floor = floor;
-    }
+    public Room(String roomID, String name, String building, int floor) {
+    this.roomID = roomID;
+    this.name = name;
+    this.building = building;
+    this.floor = floor;
+}
 
     public String getRoomID() { return roomID; }
     public void setRoomID(String roomID) { this.roomID = roomID; }

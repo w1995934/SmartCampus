@@ -13,7 +13,7 @@ public class Sensor {
     private double currentValue;
 
     public Sensor() {}
-    public Sensor( String type, String sensorID,String status,double currentValue,String roomID) {
+    public Sensor(String sensorID, String type, String status, String roomID, double currentValue) {
         this.sensorID = sensorID;
         this.type = type;
         this.status = status;
