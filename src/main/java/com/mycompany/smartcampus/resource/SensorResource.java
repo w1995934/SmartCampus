@@ -1,62 +1,68 @@
 package com.mycompany.smartcampus.resource;
+
 import com.mycompany.smartcampus.datastore.DataStore;
-import com.mycompany.smartcampus.exception.SensorUnavailableException;
+import com.mycompany.smartcampus.exception.LinkedResourceNotFoundException;
 import com.mycompany.smartcampus.model.Sensor;
-import com.mycompany.smartcampus.model.SensorReading;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
+@Path("/api/v1/sensors")
 public class SensorResource {
-    private String sensorID;
-
-    @Path("/{sensorID}/readings")
-public SensorReadingResource getSensorReadings(@PathParam("sensorID") String sensorID) {
-    return new SensorReadingResource(sensorID);
-}
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getReadings() {
-        if (!DataStore.sensors.containsKey(sensorID)) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", "Sensor with ID " + sensorID + " not found");
-            return Response.status(Response.Status.NOT_FOUND).entity(error).build();}
+    public Response getAllSensors(@QueryParam("type") String type) {
+        List<Sensor> sensorList = new ArrayList<>(DataStore.sensors.values());
 
-        List<SensorReading> readings = DataStore.readings.getOrDefault(sensorID, new ArrayList<>());
-        return Response.ok(readings).build();
-    }
+        if (type != null && !type.trim().isEmpty()) {
+            List<Sensor> filtered = new ArrayList<>();
+            for (Sensor sensor : sensorList) {
+                if (sensor.getType().equalsIgnoreCase(type)) {
+                    filtered.add(sensor);
+                }
+            }
+            return Response.ok(filtered).build();
+        }
+
+        return Response.ok(sensorList).build();}
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addReading(SensorReading reading) {
-        Sensor sensor = DataStore.sensors.get(sensorID);
-
-        if (sensor == null) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", "Sensor with ID " + sensorID + " not found");
-            return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+    public Response createSensor(Sensor sensor) {
+        if (sensor.getSensorID() == null || sensor.getSensorID().trim().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"message\": \"Sensor ID cannot be empty\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
 
-        if (sensor.getStatus().equals(Sensor.STATUS_MAINTENANCE)) {
-            throw new SensorUnavailableException(sensorID);
+        if (!DataStore.rooms.containsKey(sensor.getRoomID())) {
+            throw new LinkedResourceNotFoundException("Room with ID " + sensor.getRoomID() + " does not exist");
         }
 
-        reading.setReadingID(UUID.randomUUID().toString());
-        reading.setSensorID(sensorID);
-        DataStore.readings.computeIfAbsent(sensorID, k -> new ArrayList<>()).add(reading);
-        sensor.setCurrentValue(reading.getValue());
+        if (DataStore.sensors.containsKey(sensor.getSensorID())) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("{\"message\": \"Sensor with this ID already exists\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
 
-        return Response.status(Response.Status.CREATED).entity(reading).build();
+        DataStore.sensors.put(sensor.getSensorID(), sensor);
+        return Response.status(Response.Status.CREATED).entity(sensor).build();
+    }
+
+    @Path("/{sensorID}/readings")
+    public SensorReadingResource getSensorReadings(@PathParam("sensorID") String sensorID) {
+        return new SensorReadingResource(sensorID);
     }}

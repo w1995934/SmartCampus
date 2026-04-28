@@ -7,6 +7,9 @@ import com.mycompany.smartcampus.model.SensorReading;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +56,7 @@ public class SensorReadingResource {
 
         reading.setReadingID(UUID.randomUUID().toString());
         reading.setSensorID(sensorID);
+        reading.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         DataStore.readings.computeIfAbsent(sensorID, k -> new ArrayList<>()).add(reading);
         sensor.setCurrentValue(reading.getValue());
 
