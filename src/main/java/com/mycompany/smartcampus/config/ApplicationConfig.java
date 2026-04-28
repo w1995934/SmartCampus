@@ -1,30 +1,22 @@
 package com.mycompany.smartcampus.config;
 
+import com.mycompany.smartcampus.filter.LoggingFilter;
+import com.mycompany.smartcampus.mapper.GeneralExceptionMapper;
+import com.mycompany.smartcampus.resource.DiscoveryResource;
+import com.mycompany.smartcampus.resource.RoomResource;
+import com.mycompany.smartcampus.resource.SensorResource;
+import org.glassfish.jersey.server.ResourceConfig;
+
 import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-import java.util.HashSet;
-import java.util.Set;
 
 @ApplicationPath("/api/v1")
-public class ApplicationConfig extends Application {
+public class ApplicationConfig extends ResourceConfig {
 
-    @Override
-    public Set<Class<?>> getClasses() {
-        Set<Class<?>> classes = new HashSet<>();
-
-        //resourcess
-        classes.add(com.mycompany.smartcampus.resource.DiscoveryResource.class);
-        classes.add(com.mycompany.smartcampus.resource.RoomResource.class);
-        classes.add(com.mycompany.smartcampus.resource.SensorResource.class);
-        //exception mappers
-        classes.add(com.mycompany.smartcampus.mapper.RoomNotEmptyExceptionMapper.class);
-        classes.add(com.mycompany.smartcampus.mapper.LinkedResourceNotFoundExceptionMapper.class);
-        classes.add(com.mycompany.smartcampus.mapper.SensorUnavailableExceptionMapper.class);
-        classes.add(com.mycompany.smartcampus.mapper.GeneralExceptionMapper.class);
-
-        //filters
-        classes.add(com.mycompany.smartcampus.filter.LoggingFilter.class);
-
-        return classes;
+    public ApplicationConfig() {
+        register(DiscoveryResource.class);
+        register(RoomResource.class);
+        register(SensorResource.class);
+        register(GeneralExceptionMapper.class);
+        register(LoggingFilter.class);
     }
 }
