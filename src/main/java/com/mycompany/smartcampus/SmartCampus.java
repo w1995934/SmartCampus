@@ -1,7 +1,6 @@
 package com.mycompany.smartcampus;
 
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.eclipse.jetty.server.Server;
 import com.mycompany.smartcampus.config.ApplicationConfig;
 
@@ -14,7 +13,7 @@ public class SmartCampus {
     private static final String BASE_URI = "http://0.0.0.0:8080/";
 
     public static void main(String[] args) throws Exception {
-        ResourceConfig config = ResourceConfig.forApplicationClass(ApplicationConfig.class);
+        ApplicationConfig config = new ApplicationConfig();
 
         Server server = JettyHttpContainerFactory.createServer(URI.create(BASE_URI), config);
 
@@ -29,5 +28,4 @@ public class SmartCampus {
 
         LOGGER.info("SmartCampus API running at http://localhost:8080/api/v1");
         server.join();
-    }
-}
+    }}
